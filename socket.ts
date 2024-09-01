@@ -4,10 +4,10 @@ import Redis from "ioredis";
 import { createAdapter } from "@socket.io/redis-adapter";
 
 const redisConfig = {
-  host: "redis-16403.c305.ap-south-1-1.ec2.redns.redis-cloud.com",
-  port: 16403,
-  username: "default",
-  password: "n5CksSrJnDyrRpK2KCugejBqlFR7KmBq",
+  host: process.env.REDIS_HOST || "localhost",
+  port: parseInt(process.env.REDIS_PORT || "6379"),
+  username: process.env.REDIS_USERNAME || "default",
+  password: process.env.REDIS_PASSWORD || "",
 };
 
 const pub = new Redis(redisConfig);
