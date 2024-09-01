@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { ApiResponse } from "../../../../types/ApiResponse";
-import { loginSchema } from "@repo/common/loginSchema";
-import db from "@repo/db/client";
+import { ApiResponse } from "../../../types/ApiResponse";
+import { loginSchema } from "../../../../schema/login.schema";
+import prisma from "../../../../lib/prisma";
 import bcrypt from "bcrypt";
 
 // end point for user log in
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     }
 
     // fetching user from db
-    const user = await db.user.findFirst({
+    const user = await prisma.users.findFirst({
       where: { email },
     });
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     }
 
     // password validation
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isPasswordValid) {
       const response: ApiResponse = {
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     }
 
     // removing password from response
-    const { password: _, ...userResponse } = user;
+    const { password_hash: _, ...userResponse } = user;
 
     const response: ApiResponse = {
       success: true,

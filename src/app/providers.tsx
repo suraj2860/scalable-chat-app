@@ -1,7 +1,6 @@
 'use client'
-
-// import { DarkModeProvider } from '@repo/ui/darkModeContext'
 import { SessionProvider } from 'next-auth/react'
+import { SocketProvider } from './context/SocketProvider'
 
 type Props = {
   children?: React.ReactNode
@@ -10,7 +9,9 @@ type Props = {
 export const Providers = ({ children }: Props) => {
   return (
     <SessionProvider>
-      {children}
+      <SocketProvider>
+        {children}
+      </SocketProvider>
     </SessionProvider>
   )
 }

@@ -8,15 +8,15 @@ import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { userSchema } from '@repo/common/userSchema'; // Adjust the import path as needed
+import { signUpSchema } from '../../../../schema/signup.schema'; // Adjust the import path as needed
 import { z } from 'zod';
-import { EmptyAppbar } from '@repo/ui/emptyAppbar';
+import { EmptyAppbar } from '../../../components/emptyAppbar';
 
-type FormValues = z.infer<typeof userSchema>;
+type FormValues = z.infer<typeof signUpSchema>;
 
 export default function SignIn() {
     const { control, handleSubmit, setError, clearErrors, formState: { errors }, watch } = useForm<FormValues>({
-        resolver: zodResolver(userSchema),
+        resolver: zodResolver(signUpSchema),
         mode: 'onBlur'
     });
     const router = useRouter();
@@ -26,8 +26,8 @@ export default function SignIn() {
         setLoading(true);
 
         try {
-            const response = await axios.post('/api/user/sign-up', data);
-            console.log(response);
+            const response = await axios.post('/api/sign-up', data);
+            // console.log(response);
 
             if (response.status === 200) {
                 toast.success(response.data.message);
@@ -53,7 +53,7 @@ export default function SignIn() {
     const handleFocus = (field: keyof FormValues) => {
         const value = watch(field);
         if (value) {
-            const result = userSchema.shape[field].safeParse(value);
+            const result = signUpSchema.shape[field].safeParse(value);
 
 
             if (!result.success) {
@@ -72,51 +72,9 @@ export default function SignIn() {
                 eSportsConnect
             </div> */}
             <EmptyAppbar />
-            <div className='flex flex-col mx-auto mt-6 w-96 border-2 rounded-md p-6 text-sm text-gray-700 bg-white'>
-                <h1 className='text-3xl mb-4 text-black'>Join eSportsConnect</h1>
+            <div className='flex flex-col mx-auto mt-20 w-96 border-2 rounded-md p-6 text-sm text-gray-700 bg-white'>
+                <h1 className='text-3xl mb-4 text-black'>Join Chat-App</h1>
                 <form onSubmit={handleSubmit(handleSignUp)}>
-                    <div className='flex space-x-3'>
-                        <Controller
-                            name="firstName"
-                            control={control}
-                            render={({ field }) => (
-                                <div className="relative mt-4">
-                                    <input
-                                        type="text"
-                                        id="floating_outlined_fname"
-                                        className={`block px-2.5 pb-2.5 pt-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border ${errors.firstName ? 'border-red-500' : 'border-black'} appearance-none focus:outline-none focus:ring-0 focus:border-black peer`}
-                                        placeholder=" "
-                                        {...field}
-                                        onBlur={() => handleFocus('firstName')}
-                                    />
-                                    <label htmlFor="floating_outlined_fname" className="absolute text-sm text-gray-500 hover:cursor-text duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-5 peer-focus:top-1.5 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                        First Name*
-                                    </label>
-                                    {errors.firstName && <span className="text-red-500 text-xs">{errors.firstName.message}</span>}
-                                </div>
-                            )}
-                        />
-                        <Controller
-                            name="lastName"
-                            control={control}
-                            render={({ field }) => (
-                                <div className="relative mt-4">
-                                    <input
-                                        type="text"
-                                        id="floating_outlined_lname"
-                                        className={`block px-2.5 pb-2.5 pt-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border ${errors.lastName ? 'border-red-500' : 'border-black'} appearance-none focus:outline-none focus:ring-0 focus:border-black peer`}
-                                        placeholder=" "
-                                        {...field}
-                                        onBlur={() => handleFocus('lastName')}
-                                    />
-                                    <label htmlFor="floating_outlined_lname" className="absolute text-sm text-gray-500 hover:cursor-text duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white  px-2 peer-focus:px-2 peer-focus:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-5 peer-focus:top-1.5 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                        Last Name*
-                                    </label>
-                                    {errors.lastName && <span className="text-red-500 text-xs">{errors.lastName.message}</span>}
-                                </div>
-                            )}
-                        />
-                    </div>
                     <Controller
                         name="username"
                         control={control}
@@ -199,7 +157,7 @@ export default function SignIn() {
                     </svg>
                     <span>Continue with Google</span>
                 </button>
-                <h2 className='flex justify-center text-base'>Already on eSportsConnect? <Link href={'/sign-in'} className='text-blue-600 ml-2'> Sign in</Link></h2>
+                <h2 className='flex justify-center text-base'>Already on Chat-App? <Link href={'/sign-in'} className='text-blue-600 ml-2'> Sign in</Link></h2>
             </div>
         </div>
     );

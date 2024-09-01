@@ -1,19 +1,17 @@
-import db from "@repo/db/client";
-import { userSchema } from "@repo/common/userSchema";
+import prisma from "../../../../lib/prisma";
+import { signUpSchema } from "../../../../schema/signup.schema";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { ApiResponse } from "../../../../types/ApiResponse";
+import { ApiResponse } from "../../../types/ApiResponse";
 
 // endpoint for user signup
 export async function POST(request: Request) {
   try {
-    const { firstName, lastName, username, email, password } =
+    const { username, email, password } =
       await request.json();
 
     // zod validation
-    const result = userSchema.safeParse({
-      firstName,
-      lastName,
+    const result = signUpSchema.safeParse({
       username,
       email,
       password,
@@ -32,7 +30,7 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // check for existing user by username and email
-    const existingUser = await db.user.findFirst({
+    const existingUser = await prisma.users.findFirst({
       where: {
         OR: [{ username }, { email }],
       },
@@ -58,23 +56,17 @@ export async function POST(request: Request) {
     }
 
     // creating record for new user in db
-    const newUser = await db.user.create({
+    const newUser = await prisma.users.create({
       data: {
         username,
         email,
-        password: hashedPassword,
-        name: `${firstName} ${lastName}`,
+        password_hash: hashedPassword,
       },
       select: {
         id: true,
         username: true,
         email: true,
-        name: true,
-        bio: true,
-        location: true,
-        role: true,
-        user_type: true,
-        profile_picture_url: true,
+        profile_picture: true,
         created_at: true,
         updated_at: true,
         // Note: password is not included here

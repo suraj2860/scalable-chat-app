@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id             String      @id @default(uuid())
+  username       String      @unique
+  email          String      @unique
+  password_hash  String
+  profile_picture String?
+  created_at     DateTime    @default(now())
+  updated_at     DateTime    @updatedAt @default(now())
+  chatRooms      ChatRooms[]
+  messages       Messages[]
+  chatRoomMembers ChatRoomMembers[]
+  messageStatus  MessageStatus[]
+
+  @@index([username])
+  @@index([email])
+}
+
+model ChatRooms {
+  id             String      @id @default(uuid())
+  name           String?     @db.VarChar(255)
+  type           RoomType
+  created_by     String
+  last_message   String?
+  last_message_at DateTime?
+  profile_picture String?
+  created_at     DateTime    @default(now())
+  updated_at     DateTime    @updatedAt @default(now())
+  createdBy      Users       @relation(fields: [created_by], references: [id])
+  members        ChatRoomMembers[]
+  messages       Messages[]
+
+  @@index([created_by])
+}
+
+model Messages {
+  id             String       @id @default(uuid())
+  chatroom_id    String
+  sender_id      String
+  content        String
+  message_type   MessageType
+  created_at     DateTime     @default(now())
+  chatRoom       ChatRooms    @relation(fields: [chatroom_id], references: [id])
+  sender         Users        @relation(fields: [sender_id], references: [id])
+  status         MessageStatus[]
+
+  @@index([chatroom_id, created_at])
+}
+
+model ChatRoomMembers {
+  id             String      @id @default(uuid())
+  chatroom_id    String
+  user_id        String
+  role           MemberRole
+  unread_count   Int?
+  joined_at      DateTime    @default(now())
+  chatRoom       ChatRooms   @relation(fields: [chatroom_id], references: [id])
+  user           Users       @relation(fields: [user_id], references: [id])
+}
+
+model MessageStatus {
+  id             String      @id @default(uuid())
+  message_id     String
+  user_id        String
+  status         MessageStatusType
+  updated_at     DateTime
+  message        Messages    @relation(fields: [message_id], references: [id])
+  user           Users       @relation(fields: [user_id], references: [id])
+
+  @@index([user_id, message_id])
+}
+
+enum RoomType {
+  private
+  group
+}
+
+enum MessageType {
+  text
+  image
+  file
+}
+
+enum MemberRole {
+  member
+  admin
+}
+
+enum MessageStatusType {
+  delivered
+  read
+}

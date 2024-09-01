@@ -21,7 +21,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials, req) {
         const res = await fetch(
-          `${process.env.NEXTAUTH_URL}/api/user/sign-in`,
+          `${process.env.NEXTAUTH_URL}/api/sign-in`,
           {
             method: "POST",
             body: JSON.stringify({
@@ -61,11 +61,7 @@ export const authOptions: NextAuthOptions = {
           ...session.user,
           id: token.id,
           username: token.username,
-          bio: token.bio,
-          location: token.location,
-          role: token.role,
-          user_type: token.user_type,
-          profile_picture_url: token.profile_picture_url,
+          profile_picture: token.profile_picture,
           created_at: token.created_at,
           updated_at: token.updated_at,
         },
@@ -79,11 +75,7 @@ export const authOptions: NextAuthOptions = {
           ...token,
           id: u.id,
           username: u.username,
-          bio: u.bio,
-          location: u.location,
-          role: u.role,
-          user_type: u.user_type,
-          profile_picture_url: u.profile_picture_url,
+          profile_picture: u.profile_picture,
           created_at: u.created_at,
           updated_at: u.updated_at,
         };
